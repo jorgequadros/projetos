@@ -1,22 +1,17 @@
 package View;
 
+import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
-import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JDesktopPane;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
 
 public class ViewPrincipal extends JFrame {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 
 	/**
@@ -40,31 +35,24 @@ public class ViewPrincipal extends JFrame {
 	 */
 	public ViewPrincipal() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 534, 356);
+		setBounds(100, 100, 650, 400);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		JDesktopPane desktopPane = new JDesktopPane();
-		desktopPane.setBounds(0, 22, 512, 291);
+		desktopPane.setBounds(0, 22, 624, 328);
 		contentPane.add(desktopPane);
 		
-		JMenuBar menuBar = new JMenuBar();
-		menuBar.setBounds(0, 0, 512, 22);
-		contentPane.add(menuBar);
+		JMenuBar Barra = new JMenuBar();
+		Barra.setBounds(0, 0, 624, 22);
+		contentPane.add(Barra);
 		
 		JMenu mnCadastro = new JMenu("Cadastro");
-		menuBar.add(mnCadastro);
-		
-		JMenuItem mnItemTarefa = new JMenuItem("Tarefa");
-		mnCadastro.add(mnItemTarefa);
+		Barra.add(mnCadastro);
 		
 		JMenu mnConsulta = new JMenu("Consulta");
-		mnConsulta.setHorizontalAlignment(SwingConstants.LEFT);
-		menuBar.add(mnConsulta);
-		
-		JMenuItem mnItemConsultaTarefa = new JMenuItem("Consulta Tarefa");
-		mnConsulta.add(mnItemConsultaTarefa);
+		Barra.add(mnConsulta);
 	}
 }

@@ -1,16 +1,16 @@
 package Model;
 
-public class TarefaAgenda {
+public class Tarefa {
 
 	int id;
 	String titulo;
 	String descricao;
 	String data;
-	public TarefaAgenda() {
+	public Tarefa() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public TarefaAgenda(int id, String titulo, String descricao, String data) {
+	public Tarefa(int id, String titulo, String descricao, String data) {
 		super();
 		this.id = id;
 		this.titulo = titulo;
