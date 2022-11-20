@@ -2,16 +2,15 @@ package View;
 
 import java.text.ParseException;
 
+import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.text.MaskFormatter;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JButton;
+import javax.swing.text.MaskFormatter;
 
 @SuppressWarnings("serial")
 public class ViewCadTarefa extends JInternalFrame {
