@@ -1,17 +1,17 @@
-package Model;
+package model;
 
-public class Tarefa {
+public class Tarefas {
 
 	int id;
 	String titulo;
 	String descricao;
 	String data;
-	public Tarefa() {
-		super();
+	public void Tarefa() {
+		
 		// TODO Auto-generated constructor stub
 	}
-	public Tarefa(int id, String titulo, String descricao, String data) {
-		super();
+	public void Tarefa(int id, String titulo, String descricao, String data) {
+		
 		this.id = id;
 		this.titulo = titulo;
 		this.descricao = descricao;
@@ -49,6 +49,5 @@ public class Tarefa {
 			this.data = data;
 		}
 	}
-	
-		
+
 }
