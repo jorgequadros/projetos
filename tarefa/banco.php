@@ -1,10 +1,15 @@
-<?php 
+<?php
 
-$conexao = mysqli_connect(BD_SERVIDOR, BD_USUARIO, BD_SENHA, BD_BANCO);
+$bdServidor='localhost';
+$bdUsuario='root';
+$bdSenha='Sql105899@';
+$bdBancaDados='tarefa';
 
-if (mysqli_connect_errno($conexao)){
-    echo "<h1>Problemas para conectar no banco. Verifique os dados!</h1>";
-    die();
+$conexao = mysqli_connect($bdServidor, $bdUsuario, $bdSenha, $bdBancaDados);
+
+if(!$conexao){
+    echo '<h2>Problemas para conectar no Banco. Erro:</h2>';
+    echo mysqli_connect_errno;
+}else{
+    echo '<h2>Conexão realizada com êxito</h2>';
 }
-
-?>

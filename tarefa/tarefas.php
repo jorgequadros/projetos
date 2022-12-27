@@ -1,183 +1,84 @@
-<?php 
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Tarefas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Gerenciamento de Tarefas</h1>
+    <form action="">
+        <fieldset>
+            <legend>Nova Tarefa</legend>
+            <label for="nome">Tarefa : </label>
+            <input type="text" name="nome"></input>
+            <label for="descricao">Descrição : </label>
+            <textarea name="descricao" id="" cols="30" rows="10"></textarea>
+            <label for="prazo">Prazo : </label>
+            <input type="text" name="prazo"></input>
+            <fieldset>
+                <legend>Prioridade:</legend>
+                <input type="radio" name="prioridade" value="baixa" checked></input>Baixa
+                <input type="radio" name="prioridade" value="media"></input>Media
+                <input type="radio" name="prioridade" value="alta"></input>Alta
+            </fieldset>
+            <label>Tarefa Concluída :
+                <input type="checkbox" name="concluida" value="1">Sim</input>
+                <input type="checkbox" name="concluida" value="0">Não</input>
+            </label>
+            <input type="submit" value="Cadastrar">
 
-require 'bibliotecas\PHPMailer\src\PHPMailer.php';
-require 'bibliotecas\PHPMailer\src\SMTP.php';
-require 'bibliotecas\PHPMailer\src\Exception.php';
-
-use PHPMailer\PHPMailer\PHPMailer;
-
-include "config.php";
-include "banco.php";
-include "ajudantes.php";
-include "classes/Tarefas.php";
-
-$tarefas = new Tarefas($conexao);
-
-$tarefas->buscar_tarefas();
-
-$exibe_tabela = true;
-$tem_erros = false;
-$erros_validacao = array();
-
-if(tem_post()){
-    $tarefa = array();
-    
-    if(isset($_POST['nome']) && strlen($_POST['nome']) > 0 ){
-        $tarefa['nome'] = $_POST['nome'];
-    }else{
-        $tem_erros = true;
-        $erros_validacao['nome'] = 'O nome da tarefa é obrigatório!';
-    }
-
-    if(isset($_POST['descricao'])){
-        $tarefa['descricao'] = $_POST['descricao'];
-    }else{
-        $tarefa['descricao'] = '' ;
-    }
-    
-    if(isset($_POST['prazo']) && strlen($_POST['prazo'])){
-        if(validar_data($_POST['prazo'])){
-            $tarefa['prazo'] = traduz_data_para_banco($_POST['prazo']);
-        } else {
-            $tem_erros = true;
-            $erros_validacao['prazo'] = 'O Prazo não é uma data válida!';
-        }
-    }else{
-        $_POST['prazo'] = '' ;
-    }
-
-    if(isset($_POST['prioridade'])){
-        $tarefa['prioridade'] = $_POST['prioridade'];
+        </fieldset>
+    </form>
+    <?php
         
-    }else{
-        $tarefa['prioridade'] = 0 ;
-    }
+        session_start();
+        
+        if(array_key_exists('nome',$_GET) && $_GET['nome']!=''){//Verifica se o indíce nome existe, outra maneira e a função isset()
+            $tarefa=[];
+            $tarefa['nome'] = $_GET['nome'];
 
-    if(isset($_POST['concluida'])){
-        $tarefa['concluida'] = $_POST['concluida'];
-    }else{
-        $tarefa['concluida'] = 0 ;
-    }
+            if(array_key_exists('descricao',$_GET) && $_GET['descricao']!=''){
+                $tarefa['descricao'] = $_GET['descricao'];
+            }
 
-    if(isset($_POST['lembrete'])){
-        $tarefa['lembrete'] = $_POST['lembrete'];
-    }else{
-        $tarefa['lembrete'] = 0 ;
-    }
-    
-    if(isset($_POST['lembrete']) && $_POST['lembrete'] == '1'){
-        enviar_email($tarefa);
-    }
-    
-    gravar_tarefa($conexao,$tarefa);
-}
+            if(array_key_exists('prazo',$_GET) && $_GET['prazo']!=''){
+                $tarefa['prazo'] = $_GET['prazo'];
+            }
 
-if (isset($_POST['id'])){
-    $tarefa = busca_tarefa($conexao,$_POST['id']);
+            if(array_key_exists('prioridade',$_GET) && $_GET['prioridade']!=''){
+                $tarefa['prioridade'] = $_GET['prioridade'];
+            }
 
-}
-
-$tarefa = array(
-    'id' => 0,
-    'nome' => (isset($_POST['nome'])) ? $_POST['nome'] :'',
-    'descricao' => (isset($_POST['descricao'])) ? $_POST['descricao'] :'',
-    'prazo' => (isset($_POST['prazo'])) ? traduz_data_para_banco($_POST['prazo']) :'',
-    'prioridade' => (isset($_POST['prioridade'])) ? $_POST['prioridade'] : 0,
-    'concluida' => (isset($_POST['concluida'])) ? $_POST['concluida'] : 0,
-    'lembrete' => (isset($_POST['lembrete'])) ? $_POST['lembrete'] : 0
-);
-
-function buscar_tarefas($conexao){
-    
-    $sqlBusca = 'select * from tarefa';
-    $resultado = mysqli_query($conexao,$sqlBusca);
-    $tarefa = array();
-    
-    while ($tarefas = mysqli_fetch_assoc($resultado)) {
-        $tarefa[] = $tarefas;
-    }
-
-    return $tarefa;
-}
-
-function gravar_tarefa($conexao, $tarefas){
-    
-    $sqlGravar = "Insert into tarefa (nome, descricao, prazo, concluida, lembrete, prioridade) values (
-        '{$tarefas['nome']}',
-        '{$tarefas['descricao']}',
-        '{$tarefas['prazo']}',
-        '{$tarefas['concluida']}',
-        {$tarefas['lembrete']},
-        {$tarefas['prioridade']})";
-
-    mysqli_query ($conexao,$sqlGravar);
-}
-
-function busca_tarefa($conexao, $id){
-    
-    $sqlBusca = 'select * from tarefa where id = ' . $id;
-    $resultado = mysqli_query($conexao, $sqlBusca);
-    if (!$resultado){
-        return "";
-    }else{
-        return mysqli_fetch_assoc($resultado);
-
-    } 
-
-}
-
-function editar_tarefa($conexao, $id){
-    
-    $sqlBusca = "Update tarefa Set " .
-                "nome = '{$tarefa['nome']}', " .
-                "descricao = '{$tarefa['descricao']}', " . 
-                "prioridade = '{$tarefa['prioridade']}', " .
-                "prazo = '{$tarefa['prazo']}', " .
-                "concluida = '{$tarefa['concluida']}', " .
-                "where id = {$tarefa['id']}";
-
-    $resultado = mysqli_query($conexao, $sqlBusca);
-    if (!$resultado){
-        return "";
-    }else{
-        return mysqli_fetch_assoc($resultado);
-
-    }
-}
-
-function enviar_email($tarefa, $anexos=array())
-{
-    $corpo = preparar_corpo_email($tarefa, $anexos);
-
-    $email = new PHPMailer();
-
-    $email->isSMTP() ;
-    $email-> Host = "smtp.gmail.com";
-    $email-> Port = 587;
-    $email-> SMTPSecure = 'tls';
-    $email-> SMTPAuth = true;
-    $email-> Username = "jorge.quadros33@gmail.com";
-    $email-> Passoword = "Gml105899";
-    $email-> setFrom("jorge.quadros7@outlook.com","Avisador de Tarefas!");
-    $email-> addAddress(EMAIL_NOTIFICACAO);
-    $email-> Subject = "Aviso de tarefa: {$tarefa['nome']}";
-    $email-> msgHTML($corpo);
-
-    foreach ($anexos as $anexo) {
-        $email-> addAttachment("anexos/{$anexo['arquivo']}");
-    }
-
-    $email-> send();
-}
-
-function preparar_corpo_email($tarefa,$anexos)
-{
-    ob_start();
-    include "template_email.php";
-    $corpo = ob_get_contents();
-    ob_end_clean();
-    return $corpo;
-
-}
-
-include "template.php";
+            if(array_key_exists('concluida',$_GET) && $_GET['concluida']!=''){
+                $tarefa['concluida'] = $_GET['concluida'];
+            }
+        }
+     
+        if(array_key_exists('nome',$_GET)){//Verifica se o indíce nome existe, outra maneira e a função isset()
+            $_SESSION['lista_tarefas'][]= $tarefa;
+        }
+    ?>
+    <table>
+        <tr>
+            <th>Tarefas</th>
+            <th>Descrição</th>
+            <th>Prazo</th>
+            <th>Prioridade</th>
+            <th>Concluída</th>
+        </tr>
+        <?php foreach ($_SESSION['lista_tarefas'] as $tarefa) : ?>
+        <tr>
+            <td><?php echo $tarefa['nome']; ?></td>
+            <td><?php echo $tarefa['descricao']; ?></td>
+            <td><?php echo $tarefa['prazo']; ?></td>
+            <td><?php echo $tarefa['prioridade']; ?></td>
+            <td><?php echo $tarefa['concluida']; ?></td>
+        </tr>
+        <?php endforeach; 
+        session_destroy(); ?>
+    </table>
+</body>
+</html>
